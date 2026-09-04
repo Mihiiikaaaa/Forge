@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model checkpoints
+models/*
+!models/.gitkeep
+
+# Dataset files
+data/raw/*
+data/processed/*
+
+# Experiment outputs
+results/raw/*
+results/plots/*
+results/tables/*
+
+# Logs
+*.log
+
+# macOS
+.DS_Store

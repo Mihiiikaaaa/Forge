@@ -1,0 +1,27 @@
+project:
+  name: "machine-unlearning"
+  seed: 42
+
+dataset:
+  name: "locuslab/TOFU"
+
+model:
+  name: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+training:
+  learning_rate: 2.0e-5
+  batch_size: 2
+  gradient_accumulation_steps: 8
+  num_epochs: 3
+
+unlearning:
+  forget_percentage: 1
+  retain_weight: 1.0
+
+evaluation:
+  batch_size: 4
+
+paths:
+  data_dir: "data"
+  model_dir: "models"
+  results_dir: "results"
