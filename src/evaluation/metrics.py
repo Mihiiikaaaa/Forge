@@ -1,32 +1,33 @@
 def accuracy_score(correct, total):
-    """
-    Calculate accuracy as a percentage.
-    """
     if total == 0:
         return 0.0
-
     return (correct / total) * 100
 
 
 def forgetting_score(before, after):
     """
-    Measures reduction in performance on the forget set.
+    Measures how much target knowledge was forgotten.
 
-    Higher = more forgetting.
+    Higher value = more forgetting.
     """
     return before - after
 
 
-def retention_score(after):
+def retention_score(before, after):
     """
-    Measures retained performance after unlearning.
+    Measures how much knowledge was retained.
+
+    Higher value = better retention.
     """
-    return after
+    if before == 0:
+        return 0.0
+
+    return (after / before) * 100
 
 
 def relative_drop(before, after):
     """
-    Percentage drop from before to after.
+    Percentage decrease from before to after.
     """
     if before == 0:
         return 0.0
