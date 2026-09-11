@@ -4,11 +4,13 @@ def create_experiment_result(
     forget_percentage,
     seed
 ):
+
     return {
         "experiment": {
             "name": experiment_name,
             "model": model_name,
-            "forget_percentage": forget_percentage,
+            "forget_percentage":
+                forget_percentage,
             "seed": seed
         },
 
@@ -16,18 +18,13 @@ def create_experiment_result(
             "before_likelihood": None,
             "after_likelihood": None,
             "relative_drop": None,
-            "forgetting_score": None,
-            "truth_ratio": None,
-            "forget_quality": None,
-            "rouge_l": None
+            "forgetting_score": None
         },
 
         "retention": {
             "before_likelihood": None,
             "after_likelihood": None,
-            "retention_percentage": None,
-            "model_utility": None,
-            "rouge_l": None
+            "retention_percentage": None
         },
 
         "robustness": {
@@ -43,11 +40,7 @@ def create_experiment_result(
             "unrelated_damage": None
         },
 
-        "statistics": {
-            "mean": None,
-            "median": None,
-            "std": None,
-            "p25": None,
-            "p75": None
+        "utility": {
+            "overall_retention": None
         }
     }

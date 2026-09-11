@@ -2,10 +2,9 @@ import argparse
 import json
 from pathlib import Path
 
-from experiment_schema import create_experiment_result
-
-
-OUTPUT_DIR = Path("results/raw/experiments")
+from src.evaluation.experiment_schema import (
+    create_experiment_result
+)
 
 
 def main():
@@ -23,9 +22,9 @@ def main():
     )
 
     parser.add_argument(
-        "--forget",
+        "--forget-percentage",
         type=int,
-        required=True
+        default=1
     )
 
     parser.add_argument(
@@ -34,35 +33,47 @@ def main():
         default=42
     )
 
+    parser.add_argument(
+        "--output",
+        required=True
+    )
+
     args = parser.parse_args()
 
     result = create_experiment_result(
         experiment_name=args.name,
         model_name=args.model,
-        forget_percentage=args.forget,
+        forget_percentage=
+            args.forget_percentage,
         seed=args.seed
     )
 
-    OUTPUT_DIR.mkdir(
+    output_path = Path(args.output)
+
+    output_path.parent.mkdir(
         parents=True,
         exist_ok=True
     )
-
-    output_path = OUTPUT_DIR / f"{args.name}.json"
 
     with open(
         output_path,
         "w",
         encoding="utf-8"
     ) as f:
+
         json.dump(
             result,
             f,
             indent=4
         )
 
-    print("Experiment template created.")
-    print("Saved to:", output_path)
+    print(
+        "Experiment template created:"
+    )
+
+    print(
+        args.output
+    )
 
 
 if __name__ == "__main__":
