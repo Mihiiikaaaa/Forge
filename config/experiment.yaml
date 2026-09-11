@@ -1,0 +1,33 @@
+project:
+  name: "FORGE"
+  seed: 42
+
+development:
+  model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+forget_percentages:
+  - 1
+  - 5
+  - 10
+
+evaluation:
+  metrics:
+    - answer_likelihood
+    - forgetting_score
+    - relative_drop
+    - retention
+    - paraphrase_robustness
+    - indirect_inference
+    - relearning_resistance
+    - blast_radius
+
+robustness:
+  paraphrases_per_target: 4
+
+blast_radius:
+  embedding_model: "all-MiniLM-L6-v2"
+  candidates_per_target: 20
+  categories:
+    - related
+    - moderately_related
+    - unrelated

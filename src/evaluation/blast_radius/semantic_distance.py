@@ -7,7 +7,9 @@ MODEL_NAME = "all-MiniLM-L6-v2"
 
 def load_embedding_model():
 
-    return SentenceTransformer(MODEL_NAME)
+    return SentenceTransformer(
+        MODEL_NAME
+    )
 
 
 def calculate_similarity(
@@ -17,10 +19,8 @@ def calculate_similarity(
 ):
 
     embeddings = model.encode(
-        [
-            question_a,
-            question_b
-        ]
+        [question_a, question_b],
+        normalize_embeddings=True
     )
 
     similarity = cosine_similarity(
@@ -29,3 +29,8 @@ def calculate_similarity(
     )[0][0]
 
     return float(similarity)
+
+
+def similarity_to_distance(similarity):
+
+    return 1.0 - similarity
