@@ -1,62 +1,22 @@
-import argparse
 import json
 from pathlib import Path
 
-from datasets import load_from_disk
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from answer_likelihood import calculate_answer_likelihood
 
-from src.evaluation.answer_likelihood import (
-    calculate_answer_likelihood,
-    get_device
+
+INPUT_PATH = (
+    "data/processed/forget_paraphrases.json"
+)
+
+OUTPUT_PATH = (
+    "results/raw/robustness/paraphrase_results.json"
 )
 
 
-def load_model(model_path):
-
-    device = get_device()
-
-    print("Device:", device)
-    print("Loading tokenizer...")
-
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-
-    print("Loading model...")
-
-    model = AutoModelForCausalLM.from_pretrained(model_path)
-
-    model.to(device)
-    model.eval()
-
-    return model, tokenizer, device
-
-
-def main():
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--model-path",
-        required=True
-    )
-
-    parser.add_argument(
-        "--paraphrase-path",
-        default="data/processed/forget_paraphrases.json"
-    )
-
-    parser.add_argument(
-        "--output",
-        default="results/raw/robustness/paraphrase_results.json"
-    )
-
-    args = parser.parse_args()
-
-    model, tokenizer, device = load_model(
-        args.model_path
-    )
+def evaluate(model, tokenizer, device):
 
     with open(
-        args.paraphrase_path,
+        INPUT_PATH,
         "r",
         encoding="utf-8"
     ) as f:
@@ -68,40 +28,53 @@ def main():
 
         target_result = {
             "id": item["id"],
-            "original_question": item["original_question"],
+            "original_question": item[
+                "original_question"
+            ],
             "paraphrases": []
         }
 
         for paraphrase in item["paraphrases"]:
 
-            text = paraphrase["text"].strip()
-
-            if not text:
+            if not paraphrase.get(
+                "human_verified",
+                False
+            ):
                 continue
 
-            if not paraphrase["semantically_equivalent"]:
+            if not paraphrase.get(
+                "semantically_equivalent",
+                False
+            ):
                 continue
 
             result = calculate_answer_likelihood(
                 model=model,
                 tokenizer=tokenizer,
-                question=text,
+                question=paraphrase["text"],
                 answer=item["expected_answer"],
                 device=device
             )
 
             target_result["paraphrases"].append(
                 {
-                    "question": text,
-                    "likelihood": result["likelihood"],
+                    "text": paraphrase["text"],
+                    "likelihood": result[
+                        "likelihood"
+                    ],
                     "normalized_log_likelihood":
-                        result["normalized_log_likelihood"]
+                        result[
+                            "normalized_log_likelihood"
+                        ]
                 }
             )
 
         results.append(target_result)
 
-    output_path = Path(args.output)
+    output_path = Path(
+        OUTPUT_PATH
+    )
+
     output_path.parent.mkdir(
         parents=True,
         exist_ok=True
@@ -119,12 +92,7 @@ def main():
             ensure_ascii=False
         )
 
-    print("\n===================================")
-    print("PARAPHRASE EVALUATION COMPLETE")
-    print("===================================")
-    print("Targets:", len(results))
-    print("Saved:", args.output)
-
-
-if __name__ == "__main__":
-    main()
+    print(
+        "Paraphrase evaluation saved to:",
+        OUTPUT_PATH
+    )

@@ -2,54 +2,42 @@ import numpy as np
 
 
 def mean(values):
+    if not values:
+        return 0.0
 
-    values = np.asarray(
-        values,
-        dtype=float
-    )
-
-    return float(
-        np.mean(values)
-    )
+    return float(np.mean(values))
 
 
 def median(values):
+    if not values:
+        return 0.0
 
-    values = np.asarray(
-        values,
-        dtype=float
-    )
-
-    return float(
-        np.median(values)
-    )
+    return float(np.median(values))
 
 
 def standard_deviation(values):
+    if len(values) < 2:
+        return 0.0
 
-    values = np.asarray(
-        values,
-        dtype=float
-    )
-
-    return float(
-        np.std(values)
-    )
+    return float(np.std(values, ddof=1))
 
 
-def percentile(values, q):
+def percentile(values, p):
+    if not values:
+        return 0.0
 
-    values = np.asarray(
-        values,
-        dtype=float
-    )
-
-    return float(
-        np.percentile(values, q)
-    )
+    return float(np.percentile(values, p))
 
 
 def summarize(values):
+    if not values:
+        return {
+            "mean": 0.0,
+            "median": 0.0,
+            "std": 0.0,
+            "p25": 0.0,
+            "p75": 0.0
+        }
 
     return {
         "mean": mean(values),

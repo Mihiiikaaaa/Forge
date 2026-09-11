@@ -1,38 +1,24 @@
 import json
 from pathlib import Path
 
-import numpy as np
 
-
-RESULTS_DIR = "results/raw/experiments"
-OUTPUT_PATH = "results/tables/summary.json"
-
-
-def safe_mean(values):
-
-    values = [
-        value
-        for value in values
-        if value is not None
-    ]
-
-    if not values:
-        return None
-
-    return float(
-        np.mean(values)
-    )
+INPUT_DIR = Path("results/raw/experiments")
+OUTPUT_PATH = Path("results/tables/summary.json")
 
 
 def main():
 
-    directory = Path(
-        RESULTS_DIR
+    if not INPUT_DIR.exists():
+        print("No experiment results found.")
+        return
+
+    files = sorted(
+        INPUT_DIR.glob("*.json")
     )
 
-    files = list(
-        directory.glob("*.json")
-    )
+    if not files:
+        print("No experiment result files found.")
+        return
 
     experiments = []
 
@@ -43,85 +29,33 @@ def main():
             "r",
             encoding="utf-8"
         ) as f:
+            data = json.load(f)
 
-            experiments.append(
-                json.load(f)
-            )
+        experiments.append(data)
 
-    summary = []
-
-    for experiment in experiments:
-
-        forgetting = experiment[
-            "forgetting"
-        ]
-
-        retention = experiment[
-            "retention"
-        ]
-
-        summary.append(
-            {
-                "experiment":
-                    experiment[
-                        "experiment"
-                    ]["name"],
-
-                "model":
-                    experiment[
-                        "experiment"
-                    ]["model"],
-
-                "forget_percentage":
-                    experiment[
-                        "experiment"
-                    ]["forget_percentage"],
-
-                "forgetting_score":
-                    forgetting[
-                        "forgetting_score"
-                    ],
-
-                "relative_drop":
-                    forgetting[
-                        "relative_drop"
-                    ],
-
-                "retention_percentage":
-                    retention[
-                        "retention_percentage"
-                    ]
-            }
-        )
-
-    output_path = Path(
-        OUTPUT_PATH
-    )
-
-    output_path.parent.mkdir(
+    OUTPUT_PATH.parent.mkdir(
         parents=True,
         exist_ok=True
     )
 
     with open(
-        output_path,
+        OUTPUT_PATH,
         "w",
         encoding="utf-8"
     ) as f:
-
         json.dump(
-            summary,
+            experiments,
             f,
             indent=4
         )
 
-    print("\n===================================")
-    print("RESULT AGGREGATION")
+    print("===================================")
+    print("RESULTS AGGREGATED")
     print("===================================")
 
     print(
         "Experiments:",
-        len(summary)
+        len(experiments)
     )
 
     print(

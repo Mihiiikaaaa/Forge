@@ -10,9 +10,21 @@ forget_percentages:
   - 5
   - 10
 
+baselines:
+  - gradient_ascent
+  - retain_aware
+  - baseline_unlearning
+
+proposed_method:
+  name: "FORGE"
+
 evaluation:
   metrics:
     - answer_likelihood
+    - truth_ratio
+    - forget_quality
+    - rouge_l
+    - model_utility
     - forgetting_score
     - relative_drop
     - retention
@@ -27,6 +39,7 @@ robustness:
 blast_radius:
   embedding_model: "all-MiniLM-L6-v2"
   candidates_per_target: 20
+
   categories:
     - related
     - moderately_related
