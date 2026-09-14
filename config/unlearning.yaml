@@ -1,0 +1,20 @@
+# Optional starting point for src/unlearning/run_unlearning.py --config config/unlearning.yaml
+# CLI flags override these values. `method` is always selected with --method.
+seed: 42
+model_path: models/tofu_baseline
+forget_path: data/processed/forget_1
+retain_path: data/processed/retain_1
+max_length: 512
+epochs: 1
+batch_size: 1
+gradient_accumulation_steps: 1
+learning_rate: 1.0e-5
+weight_decay: 0.0
+logging_steps: 10
+# NPO
+beta: 0.1
+# RMU-style approximation
+target_layer: -1
+target_coefficient: 1.0
+retain_coefficient: 1.0
+target_norm: 1.0
