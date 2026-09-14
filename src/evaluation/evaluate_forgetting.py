@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -6,7 +7,7 @@ from datasets import load_from_disk
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-MODEL_PATH = "models/tofu_learned"
+MODEL_PATH = "models/unlearned/ga"
 
 FORGET_PATH = "data/processed/forget_1"
 RETAIN_PATH = "data/processed/retain_1"
@@ -17,15 +18,15 @@ MAX_LENGTH = 512
 MAX_NEW_TOKENS = 80
 
 
-def load_model():
+def load_model(model_path):
     print("Loading tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
 
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     print("Loading model...")
-    model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
+    model = AutoModelForCausalLM.from_pretrained(model_path)
 
     device = torch.device(
         "mps" if torch.backends.mps.is_available()
@@ -108,7 +109,17 @@ def evaluate_dataset(model, tokenizer, device, dataset, name, limit=40):
 
 
 def main():
-    tokenizer, model, device = load_model()
+    parser = argparse.ArgumentParser(
+        description="Evaluate forgetting and retention for an unlearned model."
+    )
+    parser.add_argument(
+        "--model-path",
+        default=MODEL_PATH,
+        help=f"Hugging Face model directory to evaluate (default: {MODEL_PATH}).",
+    )
+    args = parser.parse_args()
+
+    tokenizer, model, device = load_model(args.model_path)
 
     print("\nLoading datasets...")
 
@@ -132,7 +143,7 @@ def main():
     )
 
     results = {
-        "model": MODEL_PATH,
+        "model": args.model_path,
         "forget_set_size": len(forget_dataset),
         "retain_set_size": len(retain_dataset),
         "forget_evaluation": forget_results,
